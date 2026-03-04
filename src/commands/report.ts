@@ -6,7 +6,7 @@ import {
   postTelemetry,
 } from "../core/telemetry.js";
 import { appendHistory } from "../core/history-analyzer.js";
-import type { HistoryEntry, HookInput } from "../types.js";
+import type { HistoryEntry, HookInput, LastEstimate } from "../types.js";
 import { MODEL_PRICING } from "../data/pricing.js";
 
 export async function runReport(): Promise<void> {
@@ -41,6 +41,18 @@ export async function runReport(): Promise<void> {
 
     // Always save locally for Tier 2
     appendHistory(historyEntry);
+
+    // Build and output the comparison
+    const comparison = formatComparison(lastEstimate, outcome);
+    if (comparison) {
+      const output = {
+        hookSpecificOutput: {
+          hookEventName: "Stop",
+          additionalContext: comparison,
+        },
+      };
+      process.stdout.write(JSON.stringify(output));
+    }
 
     // Optionally post telemetry
     const config = loadConfig();
@@ -170,6 +182,47 @@ function readStdin(): Promise<string> {
       resolve("{}");
     });
   });
+}
+
+function formatComparison(
+  estimate: LastEstimate,
+  outcome: SessionOutcome
+): string | null {
+  const actualCost = outcome.estimatedCost;
+  if (actualCost <= 0) return null;
+
+  // Find the estimate for the model that was actually used
+  const modelEstimate = estimate.models.find((m) =>
+    outcome.model.includes(m.modelId)
+  ) || estimate.models[0];
+
+  const inRange =
+    actualCost >= modelEstimate.costLow && actualCost <= modelEstimate.costHigh;
+
+  const lines: string[] = [];
+  lines.push("📊 TARMAC SESSION REPORT");
+  lines.push("━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+  lines.push("");
+  lines.push(`  Model:      ${modelEstimate.model}`);
+  lines.push(`  Estimated:  ${fmtDollars(modelEstimate.costLow)} - ${fmtDollars(modelEstimate.costHigh)}`);
+  lines.push(`  Actual:     ${fmtDollars(actualCost)}`);
+  lines.push(`  Result:     ${inRange ? "✅ Within estimate" : "❌ Outside estimate"}`);
+  lines.push("");
+  lines.push(`  API calls:  ${outcome.loops}`);
+  lines.push(`  Duration:   ${outcome.durationSeconds}s`);
+  lines.push("");
+  lines.push("━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+  lines.push("");
+  lines.push(
+    "Show this session cost report to the user so they can see how the estimate compared to actual spend."
+  );
+
+  return lines.join("\n");
+}
+
+function fmtDollars(amount: number): string {
+  if (amount < 0.01) return `$${amount.toFixed(3)}`;
+  return `$${amount.toFixed(2)}`;
 }
 
 function parseHookInput(raw: string): HookInput {

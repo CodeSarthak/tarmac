@@ -46,7 +46,9 @@ export function formatEstimate(estimate: CostEstimate): string {
   lines.push("━━━━━━━━━━━━━━━━━━━━━━━━━━━");
   lines.push("");
   lines.push(
-    "Present this cost estimate to the user. Ask whether to proceed, switch to a different model, or cancel. Do not begin any work until the user confirms."
+    "IMPORTANT INSTRUCTION: You MUST present the cost estimate above to the user BEFORE doing any work. " +
+    "Show the estimate exactly as formatted, then ask the user whether to proceed, switch to a cheaper model, or cancel. " +
+    "Do NOT skip this step. Do NOT begin any work until the user explicitly confirms."
   );
 
   return lines.join("\n");
