@@ -1,11 +1,11 @@
 {
-  "name": "tarmac-cli",
+  "name": "tarmac-cost",
   "version": "0.1.0",
   "description": "Pre-flight cost estimation for Claude Code. Know what your AI task will cost before it runs.",
   "type": "module",
   "main": "dist/cli.js",
   "bin": {
-    "tarmac-cli": "dist/cli.js"
+    "tarmac-cost": "dist/cli.js"
   },
   "scripts": {
     "build": "tsc",

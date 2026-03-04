@@ -126,7 +126,7 @@ function installHooks(): void {
     hooks: [
       {
         type: "command",
-        command: "tarmac-cli estimate",
+        command: "tarmac-cost estimate",
         timeout: 10000,
       },
     ],
@@ -137,7 +137,7 @@ function installHooks(): void {
     hooks: [
       {
         type: "command",
-        command: "tarmac-cli report",
+        command: "tarmac-cost report",
         timeout: 5000,
       },
     ],
@@ -147,7 +147,7 @@ function installHooks(): void {
   const existingPromptHooks = settings.hooks.UserPromptSubmit || [];
   // Check if Tarmac hook already exists
   const hasTarmacEstimate = existingPromptHooks.some((h) =>
-    h.hooks?.some((hh) => hh.command?.includes("tarmac-cli estimate"))
+    h.hooks?.some((hh) => hh.command?.includes("tarmac-cost estimate"))
   );
   if (!hasTarmacEstimate) {
     existingPromptHooks.push(estimateHook);
@@ -157,7 +157,7 @@ function installHooks(): void {
   // Add Stop hook (preserve existing)
   const existingStopHooks = settings.hooks.Stop || [];
   const hasTarmacReport = existingStopHooks.some((h) =>
-    h.hooks?.some((hh) => hh.command?.includes("tarmac-cli report"))
+    h.hooks?.some((hh) => hh.command?.includes("tarmac-cost report"))
   );
   if (!hasTarmacReport) {
     existingStopHooks.push(reportHook);

@@ -7,9 +7,9 @@ Pre-flight cost estimation CLI for Claude Code.
 ```bash
 npm install
 npm run build        # compiles src/ → dist/
-tarmac-cli setup     # installs hooks into ~/.claude/settings.json
-tarmac-cli estimate  # called automatically by Claude Code hook (reads stdin)
-tarmac-cli report    # called automatically on session end (reads stdin)
+tarmac-cost setup     # installs hooks into ~/.claude/settings.json
+tarmac-cost estimate  # called automatically by Claude Code hook (reads stdin)
+tarmac-cost report    # called automatically on session end (reads stdin)
 ```
 
 ## Architecture

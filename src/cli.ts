@@ -8,7 +8,7 @@ import { runSetup } from "./commands/setup.js";
 const program = new Command();
 
 program
-  .name("tarmac-cli")
+  .name("tarmac-cost")
   .description(
     "Pre-flight cost estimation for Claude Code. Know what your AI task will cost before it runs."
   )

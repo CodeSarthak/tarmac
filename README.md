@@ -31,8 +31,8 @@ No API key required. No external calls. Everything runs locally in ~5ms.
 ## Quick Start
 
 ```bash
-npm install -g tarmac-cli
-tarmac-cli setup
+npm install -g tarmac-cost
+tarmac-cost setup
 ```
 
 That's it. Open Claude Code and every prompt will now include a cost estimate.
@@ -62,7 +62,7 @@ Validated on 3,381 real tasks (3,000 SWE-bench + 381 local Claude Code sessions)
 └────────────┘     └──────────────┘     └────────────────┘     └──────────────┘
 ```
 
-1. **Hook intercept** — Claude Code's `UserPromptSubmit` hook pipes your prompt to `tarmac-cli estimate` via stdin
+1. **Hook intercept** — Claude Code's `UserPromptSubmit` hook pipes your prompt to `tarmac-cost estimate` via stdin
 2. **Feature extraction** — 24 features extracted from prompt text (length, code blocks, file paths, task keywords, vocabulary richness, etc.)
 3. **Per-model regression** — Separate ridge regression models for Opus, Sonnet, and Haiku predict log₁₀(cost)
 4. **Conformal calibration** — Residuals from a held-out calibration set determine the interval width needed for 80% coverage
