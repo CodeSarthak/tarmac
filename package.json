@@ -1,0 +1,42 @@
+{
+  "name": "tarmac-cli",
+  "version": "0.1.0",
+  "description": "Pre-flight cost estimation for Claude Code. Know what your AI task will cost before it runs.",
+  "type": "module",
+  "main": "dist/cli.js",
+  "bin": {
+    "tarmac-cli": "dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "claude",
+    "anthropic",
+    "cost",
+    "estimation",
+    "llm",
+    "ai",
+    "tokens",
+    "cli"
+  ],
+  "author": "Tarmac",
+  "license": "MIT",
+  "dependencies": {
+    "commander": "^13.1.0",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.10",
+    "typescript": "^5.8.2"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ]
+}
