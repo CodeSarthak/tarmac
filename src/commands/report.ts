@@ -42,10 +42,10 @@ export async function runReport(): Promise<void> {
     // Always save locally for Tier 2
     appendHistory(historyEntry);
 
-    // Print comparison to stderr (visible to user in terminal)
+    // Output comparison as systemMessage (shown to user by Claude Code)
     const comparison = formatComparison(lastEstimate, outcome);
     if (comparison) {
-      process.stderr.write("\n" + comparison + "\n");
+      process.stdout.write(JSON.stringify({ systemMessage: comparison }));
     }
 
     // Optionally post telemetry
