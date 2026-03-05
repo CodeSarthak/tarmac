@@ -12,7 +12,8 @@ program
   .description(
     "Pre-flight cost estimation for Claude Code. Know what your AI task will cost before it runs."
   )
-  .version("0.1.0");
+  .version("0.1.2")
+  .allowExcessArguments(true);
 
 program
   .command("setup")
@@ -25,6 +26,7 @@ program
 
 program
   .command("estimate")
+  .allowExcessArguments(true)
   .description(
     "Estimate cost for a prompt (called by UserPromptSubmit hook — reads stdin)"
   )
@@ -34,6 +36,7 @@ program
 
 program
   .command("report")
+  .allowExcessArguments(true)
   .description(
     "Record actual outcome after task completion (called by Stop hook — reads stdin)"
   )
