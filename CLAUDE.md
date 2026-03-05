@@ -9,7 +9,7 @@ npm install
 npm run build        # compiles src/ → dist/
 tarmac-cost setup     # installs hooks into ~/.claude/settings.json
 tarmac-cost estimate  # called automatically by Claude Code hook (reads stdin)
-tarmac-cost report    # called automatically on session end (reads stdin)
+tarmac-cost report    # run manually after a session to compare estimate vs actual
 ```
 
 ## Architecture

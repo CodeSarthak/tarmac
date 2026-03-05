@@ -35,20 +35,28 @@ npm install -g tarmac-cost
 tarmac-cost setup
 ```
 
-That's it. Open Claude Code and every prompt will now include a cost estimate. When a session ends, you'll also see a report comparing the estimate to actual spend:
+That's it. Open Claude Code and every prompt (5+ words) will now include a cost estimate.
+
+After a session, run `tarmac-cost report` to compare the estimate to what actually happened:
 
 ```
-📊 TARMAC SESSION REPORT
-━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  Model:      Opus 4.6
-  Estimated:  $0.58 - $4.34
-  Actual:     $2.17
-  Result:     ✅ Within estimate
+$ tarmac-cost report
 
-  API calls:  12
-  Duration:   94s
-━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  📊 TARMAC SESSION REPORT
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+    Model:      Opus 4.6
+    Estimated:  $0.58 - $4.34
+    Actual:     $2.17
+    Result:     ✅ Within estimate
+
+    API calls:  12
+    Duration:   94s
+
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
+
+The report compares the last estimate against the actual cost from that session's transcript. Run it after exiting a Claude Code session to see how the prediction held up.
 
 To uninstall, remove the Tarmac hook entries from `~/.claude/settings.json`.
 
