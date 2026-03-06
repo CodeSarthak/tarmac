@@ -1,9 +1,16 @@
+import { readFileSync, writeFileSync, existsSync } from "fs";
+import { join } from "path";
+import { homedir } from "os";
 import { loadLastEstimate } from "../core/telemetry.js";
+
+const PREV_COST_PATH = join(homedir(), ".tarmac", "prev-session-cost.json");
 
 /**
  * Statusline command — called by Claude Code's statusLine feature.
  * Reads session JSON from stdin, reads last estimate from file,
  * and outputs a persistent cost display.
+ *
+ * Shows: Est (predicted range) | Last (actual cost of last message) | Session (total) | Ctx
  */
 export async function runStatusline(): Promise<void> {
   try {
@@ -15,7 +22,6 @@ export async function runStatusline(): Promise<void> {
 
     // Show last estimate if we have one
     if (lastEstimate && lastEstimate.models.length > 0) {
-      // Find the estimate for the current model, or show the first one
       const currentModelId = session.modelId || "";
       const matched = lastEstimate.models.find(m =>
         currentModelId.includes(m.modelId) || m.modelId.includes(currentModelId)
@@ -27,12 +33,22 @@ export async function runStatusline(): Promise<void> {
       );
     }
 
-    // Show actual session cost if available
+    // Compute per-message cost by diffing session totals
     if (session.totalCost > 0) {
-      parts.push(`\x1b[32mSpent: ${fmtDollars(session.totalCost)}\x1b[0m`);
+      const prevCost = loadPrevCost(session.sessionId);
+      const lastMsgCost = prevCost !== null ? session.totalCost - prevCost : 0;
+
+      if (lastMsgCost > 0.001) {
+        parts.push(`\x1b[32mLast: ${fmtDollars(lastMsgCost)}\x1b[0m`);
+      }
+
+      parts.push(`\x1b[36mSession: ${fmtDollars(session.totalCost)}\x1b[0m`);
+
+      // Save current total for next diff
+      savePrevCost(session.sessionId, session.totalCost);
     }
 
-    // Show context usage if available
+    // Show context usage
     if (session.contextPct > 0) {
       const color = session.contextPct >= 80 ? "\x1b[31m" : session.contextPct >= 50 ? "\x1b[33m" : "\x1b[36m";
       parts.push(`${color}Ctx: ${Math.round(session.contextPct)}%\x1b[0m`);
@@ -51,6 +67,7 @@ interface SessionInput {
   modelName: string;
   totalCost: number;
   contextPct: number;
+  sessionId: string;
 }
 
 function parseSessionInput(raw: string): SessionInput {
@@ -61,10 +78,29 @@ function parseSessionInput(raw: string): SessionInput {
       modelName: parsed.model?.display_name || "",
       totalCost: parsed.cost?.total_cost_usd || 0,
       contextPct: parsed.context_window?.used_percentage || 0,
+      sessionId: parsed.session_id || "unknown",
     };
   } catch {
-    return { modelId: "", modelName: "", totalCost: 0, contextPct: 0 };
+    return { modelId: "", modelName: "", totalCost: 0, contextPct: 0, sessionId: "unknown" };
   }
+}
+
+function loadPrevCost(sessionId: string): number | null {
+  try {
+    if (existsSync(PREV_COST_PATH)) {
+      const data = JSON.parse(readFileSync(PREV_COST_PATH, "utf-8"));
+      if (data.sessionId === sessionId) {
+        return data.totalCost;
+      }
+    }
+  } catch { /* ignore */ }
+  return null;
+}
+
+function savePrevCost(sessionId: string, totalCost: number): void {
+  try {
+    writeFileSync(PREV_COST_PATH, JSON.stringify({ sessionId, totalCost }));
+  } catch { /* ignore */ }
 }
 
 function readStdin(): Promise<string> {
