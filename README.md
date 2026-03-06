@@ -167,7 +167,7 @@ tarmac/
 
 What tarmac can't do (yet):
 
-- **Short/vague prompts** — A 5-word prompt like "fix the login bug" gives the model very little signal. Estimates will be wide.
+- **Short/vague prompts** — A 4-word prompt like "fix the login bug" gives the model very little signal. Estimates will be wide.
 - **No context awareness** — The model sees only the current prompt text, not the conversation history or codebase. A follow-up "do it differently" has no features to work with.
 - **Local data gap** — Trained primarily on SWE-bench (3,000 instances). Only 381 local sessions in the validation set. Real-world usage patterns may differ.
 - **Irreducible variance** — Even with perfect features, ~38% of cost variance is irreducible (same prompt can cost 2x or 0.5x depending on codebase state, model behavior, etc). This is a fundamental limit, not a model problem.
