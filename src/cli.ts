@@ -4,6 +4,7 @@ import { Command } from "commander";
 import { runEstimate } from "./commands/estimate.js";
 import { runReport } from "./commands/report.js";
 import { runSetup } from "./commands/setup.js";
+import { runStatusline } from "./commands/statusline.js";
 
 const program = new Command();
 
@@ -42,6 +43,16 @@ program
   )
   .action(async () => {
     await runReport();
+  });
+
+program
+  .command("statusline")
+  .allowExcessArguments(true)
+  .description(
+    "Output cost info for Claude Code statusline (reads session JSON from stdin)"
+  )
+  .action(async () => {
+    await runStatusline();
   });
 
 program.parse();

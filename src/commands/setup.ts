@@ -19,6 +19,11 @@ interface ClaudeSettings {
     Stop?: HookEntry[];
     [key: string]: HookEntry[] | undefined;
   };
+  statusLine?: {
+    type: string;
+    command: string;
+    padding?: number;
+  };
   [key: string]: unknown;
 }
 
@@ -65,9 +70,10 @@ export async function runSetup(): Promise<void> {
   saveConfig(config);
   console.log(`  ✓  Config saved (~/.tarmac/config.json)`);
 
-  // Install hooks
+  // Install hooks + statusline
   installHooks();
   console.log("  ✓  Hooks installed (~/.claude/settings.json)");
+  console.log("  ✓  Statusline installed (persistent cost display)");
 
   // Bootstrap history from past sessions
   console.log("  ⏳ Scanning past Claude Code sessions for calibration...");
@@ -151,6 +157,12 @@ function installHooks(): void {
       (h) => !h.hooks?.some((hh) => hh.command?.includes("tarmac-cost"))
     );
   }
+
+  // Install statusline (persistent cost display at bottom of terminal)
+  settings.statusLine = {
+    type: "command",
+    command: "tarmac-cost statusline",
+  };
 
   // Write back
   writeFileSync(CLAUDE_SETTINGS_PATH, JSON.stringify(settings, null, 2));
