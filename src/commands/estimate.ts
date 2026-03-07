@@ -3,7 +3,7 @@ import { countTokens } from "../core/token-counter.js";
 import { classifyPrompt } from "../core/prompt-classifier.js";
 import { getConformalEstimates } from "../core/conformal-predictor.js";
 import { formatEstimate } from "../core/formatter.js";
-import { loadConfig, saveLastEstimate, saveCostAtPrompt } from "../core/telemetry.js";
+import { loadConfig, saveLastEstimate } from "../core/telemetry.js";
 import type { HookInput, HookOutput, CostEstimate } from "../types.js";
 
 export async function runEstimate(): Promise<void> {
@@ -62,9 +62,6 @@ export async function runEstimate(): Promise<void> {
     // Step 7: Save for later comparison (report command)
     saveLastEstimate(estimate, hookInput.session_id || "unknown");
 
-    // Save session cost at prompt submission time for statusline "Last" diff
-    saveCostAtPrompt(hookInput.session_id || "unknown", hookInput.sessionCost || 0);
-
     // Step 8: Format and output
     const formatted = formatEstimate(estimate);
     writeHookOutput(formatted);
@@ -104,14 +101,12 @@ function readStdin(): Promise<string> {
 function parseHookInput(raw: string): HookInput {
   try {
     const parsed = JSON.parse(raw);
-
     return {
       hook_event_name: parsed.hook_event_name || "UserPromptSubmit",
       prompt: parsed.prompt || parsed.message || undefined,
       transcript_path: parsed.transcript_path || undefined,
       session_id: parsed.session_id || undefined,
       cwd: parsed.cwd || undefined,
-      sessionCost: parsed.cost?.total_cost_usd || 0,
     };
   } catch {
     return {
