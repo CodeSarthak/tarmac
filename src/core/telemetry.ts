@@ -11,6 +11,7 @@ import type {
 const TARMAC_DIR = join(homedir(), ".tarmac");
 const CONFIG_PATH = join(TARMAC_DIR, "config.json");
 const LAST_ESTIMATE_PATH = join(TARMAC_DIR, "last-estimate.json");
+const COST_AT_PROMPT_PATH = join(TARMAC_DIR, "cost-at-prompt.json");
 
 export function loadConfig(): TarmacConfig {
   try {
@@ -52,6 +53,20 @@ export function saveLastEstimate(
     models: estimate.models,
   };
   writeFileSync(LAST_ESTIMATE_PATH, JSON.stringify(lastEstimate, null, 2));
+}
+
+export function saveCostAtPrompt(sessionId: string, totalCost: number): void {
+  ensureTarmacDir();
+  writeFileSync(COST_AT_PROMPT_PATH, JSON.stringify({ sessionId, totalCost }));
+}
+
+export function loadCostAtPrompt(): { sessionId: string; totalCost: number } | null {
+  try {
+    if (existsSync(COST_AT_PROMPT_PATH)) {
+      return JSON.parse(readFileSync(COST_AT_PROMPT_PATH, "utf-8"));
+    }
+  } catch { /* ignore */ }
+  return null;
 }
 
 export function loadLastEstimate(): LastEstimate | null {

@@ -68,6 +68,7 @@ export interface HookInput {
   transcript_path?: string;
   session_id?: string;
   cwd?: string;
+  sessionCost?: number;
 }
 
 export interface HookOutput {
